@@ -120,7 +120,7 @@ def incr(config: dict, vet: bool = True, key: str = None) -> bool:
         pipe.hmset(f'config#{key}', config)
         # periodic
         for k, v in config.items():
-            if end := ends.get('k'):
+            if end := ends.get(k):
                 counter_key = f'counter#{k}#{key}'
 
                 if v > -1 and counts.get(k, 0) < v:

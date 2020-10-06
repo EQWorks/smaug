@@ -8,13 +8,14 @@ from smaug.config import vet_config, get_config_key, get_end_of
 client = redis.from_url(os.getenv('REDIS_URL', 'redis://localhost:6379/9'))
 
 
-def incr(config: dict, vet: bool = True, key: str = None) -> bool:
+def incr(config: dict, vet: bool = True, key: str = None, n: int = 1) -> bool:
     """Increment periodic counter(s) based on the given config.
 
     Args:
         config (dict): counter configuration.
         vet (bool): whether to run vet_config(config). Default: True.
         key (str): run get_config_key(config) when not supplied. Default: None.
+        n (int): number of times counters should be incremented. Default: 1.
 
     Returns:
         bool - True when periodic counter(s) are incremented properly;
@@ -37,14 +38,19 @@ def incr(config: dict, vet: bool = True, key: str = None) -> bool:
             if end := ends.get(k):
                 counter_key = f'counter#{k}#{key}'
 
-                if v > -1 and counts.get(k, 0) < v:
-                    pipe.incr(counter_key)
+                if v == -1:  # no rate limiting
+                    continue
+
+                if (counts.get(k, 0) + n) <= v:
+                    for _ in range(n):  # multiple counts
+                        pipe.incr(counter_key)
+
                     pipe.expireat(counter_key, end.timestamp())
                 else:
-                    return False
+                    return False  # deny
 
         pipe.execute()
-        return True
+        return True  # pass
 
 
 increment = incr

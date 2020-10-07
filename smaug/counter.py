@@ -1,5 +1,12 @@
+import logging
+
 from smaug.db import r
 from smaug.config import vet_config, get_config_key, get_end_of
+
+
+logger = logging.getLogger()
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.INFO)
 
 
 def incr(config: dict, n: int = 1) -> bool:
@@ -20,7 +27,7 @@ def incr(config: dict, n: int = 1) -> bool:
 
     with r.pipeline() as pipe:
         # refresh config key
-        config_key = f'config#{key}'
+        config_key = f'smaug#{key}'
         pipe.hmset(config_key, config)
         pipe.expire(config_key, 5259600)  # ~2 months retention
         # periodic
@@ -40,6 +47,7 @@ def incr(config: dict, n: int = 1) -> bool:
                     return False  # deny
 
         pipe.execute()
+        logger.info(f'{config_key}#n#{n}')  # logging for billing purposes
         return True  # pass
 
 

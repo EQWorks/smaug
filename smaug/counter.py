@@ -1,38 +1,28 @@
-import os
-
-import redis
-
+from smaug.db import r
 from smaug.config import vet_config, get_config_key, get_end_of
 
 
-client = redis.from_url(os.getenv('REDIS_URL', 'redis://localhost:6379/9'))
-
-
-def incr(config: dict, vet: bool = True, key: str = None, n: int = 1) -> bool:
+def incr(config: dict, n: int = 1) -> bool:
     """Increment periodic counter(s) based on the given config.
 
     Args:
-        config (dict): counter configuration.
-        vet (bool): whether to run vet_config(config). Default: True.
-        key (str): run get_config_key(config) when not supplied. Default: None.
+        config (dict): counter config dict.
         n (int): number of times counters should be incremented. Default: 1.
 
     Returns:
         bool - True when periodic counter(s) are incremented properly;
                False otherwise.
     """
-    if vet:
-        config = vet_config(config)
-
-    if not key:
-        key = get_config_key(config)
-
     ends = get_end_of()
-    counts = get(config, vet=False, key=key)
+    config = vet_config(**config)
+    key = get_config_key(config, vet=False)
+    counts = get(key, ends=ends)
 
-    with client.pipeline() as pipe:
-        # config hash/dict
-        pipe.hmset(f'config#{key}', config)
+    with r.pipeline() as pipe:
+        # refresh config key
+        config_key = f'config#{key}'
+        pipe.hmset(config_key, config)
+        pipe.expire(config_key, 5259600)  # ~2 months retention
         # periodic
         for k, v in config.items():
             if end := ends.get(k):
@@ -56,26 +46,27 @@ def incr(config: dict, vet: bool = True, key: str = None, n: int = 1) -> bool:
 increment = incr
 
 
-def get(config: dict, vet: bool = True, key: str = None) -> dict:
+def get(config: dict, vet: bool = True, ends: dict = None) -> dict:
     """Get current counts from periodic counter(s) with the given config.
 
     Args:
-        config (dict): counter configuration.
-        vet (bool): whether to run vet_config(config). Default: True.
-        key (str): run get_config_key(config) when not supplied. Default: None.
+        config (dict): counter config dict.
+        vet (bool): whether to run through config.vet_config(). Default: True.
+        ends (dict): end of periods generated from config.get_end_of().
+                     Default: None, which will run get_end_of() to fetch.
 
     Returns:
         dict - counts from periodic counter(s).
     """
+    if ends is None:
+        ends = get_end_of()
+
     if vet:
-        config = vet_config(config)
+        config = vet_config(**config)
 
-    if key is None:
-        key = get_config_key(config)
+    key = get_config_key(config, vet=False)
 
-    ends = get_end_of()
-
-    with client.pipeline() as pipe:
+    with r.pipeline() as pipe:
         periods = []
         for k in config.keys():
             if ends.get(k):

@@ -17,6 +17,7 @@ CONFIG_TYPES = {
     'white-label': (str, None),
     'customer': (str, None),
     'user': (str, None),
+    'prefix': (str, None),
 }
 
 
@@ -34,8 +35,8 @@ def vet_config(id: str, **kwargs) -> dict:
 
     Examples:
 
-        >>> vet_config(id='test_counter', a=1, pre=True, month=10000)
-        {'id': 'test_counter', 'pre': True, 'month': 10000}
+        >>> vet_config(id='test_counter', a=1, month=10000)
+        {'id': 'test_counter', month': 10000}
     """
     if not id or type(id) is not str:
         raise ValueError('A string id is required')
@@ -50,25 +51,32 @@ def vet_config(id: str, **kwargs) -> dict:
     return r
 
 
-def get_config_key(config: dict) -> str:
+def get_config_key(config: dict, vet: bool = True) -> str:
     """Get hash key from a given counter config.
 
     Args:
         config (dict): counter config dict.
+        vet (bool): whether to run through vet_config(). Default: True.
 
     Returns:
-        str: The hash hex digest string.
+        str: the hash hex digest string.
 
     Examples:
 
-        >>> config = {'id': 'test_counter', 'pre': True, 'per_month': 50000}
-        >>> get_config_key(config=config)
-        'd78ac92af4ca90e8bc3c7c04981efd8f8bd7a95d'
+        >>> get_config_key({'id': 'test_counter', 'a': 1, 'month': 50000})
+        'a0f109817eb6f7ae4b201fb00338386354c026de'
+        >>> get_config_key({'month': 50000, 'a': 1, 'id': 'test_counter'})
+        'a0f109817eb6f7ae4b201fb00338386354c026de'
+        >>> get_config_key({'a': 1, 'id': 'test_counter'}, vet=False)
+        '58b67b3f1049f3863f69df4842f8fd743a8e00fa'
     """
+    if vet:
+        config = vet_config(**config)
+
     return sha1(json.dumps(config, sort_keys=True).encode()).hexdigest()
 
 
-def get_end_of(time: datetime = None):
+def get_end_of(time: datetime = None) -> dict:
     if datetime is not None:
         time = datetime.now()
 

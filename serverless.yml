@@ -1,0 +1,37 @@
+service: smaug
+
+provider:
+  name: aws
+  runtime: python3.8
+  memorySize: 1024
+  region: us-east-1
+  logRetentionInDays: 730  # ~2 years
+  vpc: # vpc-70658509 | EQ-DC-Tunnel
+    securityGroupIds:
+      - sg-081b437d # api-gateway-dc
+    subnetIds:
+      - subnet-b59ae9fe # EQ-DC-Lambda Public 1A
+      - subnet-df12bb82 # EQ-DC-Lambda Public 1B
+  environment:
+    AWS_LAMBDA_DEPLOYED: true
+
+package:
+  exclude:
+    - .github/**
+    - .vscode/**
+    - node_modules/**
+    - package.json
+    - yarn.lock
+    - Pipfile.lock
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+
+functions:
+  increment:
+    handler: handler.increment
+    timeout: 6

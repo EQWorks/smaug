@@ -27,7 +27,7 @@ def incr(config: dict, n: int = 1) -> bool:
     ends = get_end_of()
     config = vet_config(**config)
     key = get_config_key(config, vet=False)
-    counts = get(key, ends=ends)
+    counts = get(config, key=key, vet=False, ends=ends)
 
     with r.pipeline() as pipe:
         # refresh config key
@@ -46,7 +46,7 @@ def incr(config: dict, n: int = 1) -> bool:
                     for _ in range(n):  # multiple counts
                         pipe.incr(counter_key)
 
-                    pipe.expireat(counter_key, end.timestamp())
+                    pipe.expireat(counter_key, int(end.timestamp()))
                 else:
                     return False  # deny
 
@@ -58,11 +58,17 @@ def incr(config: dict, n: int = 1) -> bool:
 increment = incr
 
 
-def get(config: dict, vet: bool = True, ends: dict = None) -> dict:
+def get(
+    config: dict,
+    key: str = None,
+    vet: bool = True,
+    ends: dict = None,
+) -> dict:
     """Get current counts from periodic counter(s) with the given config.
 
     Args:
         config (dict): counter config dict.
+        key (str): computed config key. Default: None.
         vet (bool): whether to run through config.vet_config(). Default: True.
         ends (dict): end of periods generated from config.get_end_of().
                      Default: None, which will run get_end_of() to fetch.
@@ -76,7 +82,8 @@ def get(config: dict, vet: bool = True, ends: dict = None) -> dict:
     if vet:
         config = vet_config(**config)
 
-    key = get_config_key(config, vet=False)
+    if key is None:
+        key = get_config_key(config, vet=False)
 
     with r.pipeline() as pipe:
         periods = []
@@ -86,4 +93,4 @@ def get(config: dict, vet: bool = True, ends: dict = None) -> dict:
                 periods.append(k)
                 pipe.get(counter_key)
 
-        return dict(zip(periods, [int(r) for r in pipe.execute()]))
+        return dict(zip(periods, [int(r) if r else 0 for r in pipe.execute()]))

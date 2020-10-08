@@ -1,0 +1,12 @@
+{
+  "name": "smaug",
+  "version": "0.1.0",
+  "description": "centralized API counter",
+  "repository": "git@github.com:EQWorks/smaug.git",
+  "author": "Runzhou Li (woozyking) <runzhou.li@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "serverless-python-requirements": "^5.1.0"
+  }
+}

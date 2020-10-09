@@ -1,6 +1,7 @@
 from hashlib import sha1
 from datetime import datetime
 import calendar
+from string import Template
 try:
     import simplejson as json
 except ImportError:
@@ -102,3 +103,17 @@ def get_end_of(time: datetime = None) -> dict:
             *minute_end,
         ),
     )
+
+
+def get_log_template(config: dict, vet: bool = True) -> str:
+    if vet:
+        config = vet_config(config)
+
+    f = 'smaug'
+    for k in config.keys():
+        _type, _ = CONFIG_TYPES.get(k, (None, None))
+        if k == 'id' or _type is str:  # categorical
+            f += f'#{k}#${k}'
+
+    f += '#config_key#$config_key}#n#$n'
+    return Template(f)

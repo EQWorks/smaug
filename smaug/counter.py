@@ -1,7 +1,12 @@
 import logging
 
 from smaug.db import r
-from smaug.config import vet_config, get_config_key, get_end_of
+from smaug.config import (
+    vet_config,
+    get_config_key,
+    get_end_of,
+    get_log_template,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -21,6 +26,7 @@ def incr(config: dict, n: int = 1) -> bool:
     ends = get_end_of()
     config = vet_config(**config)
     key = get_config_key(config, vet=False)
+    t = get_log_template(config, vet=False)
     counts = get(config, key=key, vet=False, ends=ends)
 
     with r.pipeline() as pipe:
@@ -45,7 +51,8 @@ def incr(config: dict, n: int = 1) -> bool:
                     return False  # deny
 
         pipe.execute()
-        logger.info(f'{config_key}#n#{n}')  # logging for billing purposes
+        # logging for billing purposes
+        logger.info(t.substitute(**config, config_key=config_key, n=n))
         return True  # pass
 
 

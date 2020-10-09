@@ -1,16 +1,10 @@
-import os
 import logging
 
 from smaug.db import r
 from smaug.config import vet_config, get_config_key, get_end_of
 
 
-logger = logging.getLogger()
-if not os.getenv('AWS_LAMBDA_DEPLOYED'):
-    # no need for AWS Lambda deployed as it pre-configured logging
-    logger.addHandler(logging.StreamHandler())
-
-logger.setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def incr(config: dict, n: int = 1) -> bool:

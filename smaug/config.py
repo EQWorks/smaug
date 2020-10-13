@@ -115,5 +115,5 @@ def get_log_template(config: dict, vet: bool = True) -> str:
         if k == 'id' or _type is str:  # categorical
             f += f'#{k}#${k}'
 
-    f += '#config_key#$config_key}#n#$n'
+    f += '#config_key#$config_key#n#$n'
     return Template(f)

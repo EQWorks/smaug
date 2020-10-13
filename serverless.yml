@@ -14,6 +14,21 @@ provider:
       - subnet-df12bb82 # EQ-DC-Lambda Public 1B
   environment:
     AWS_LAMBDA_DEPLOYED: true
+    REDIS_URL:
+      # cloudformation functions to form redis://<host>:<port>
+      "Fn::Join": [
+        "",
+        [
+          "redis://",
+          "Fn::Join": [
+            ":",
+            [
+              "Fn::GetAtt": [RedisCluster, RedisEndpoint.Address],
+              "Fn::GetAtt": [RedisCluster, RedisEndpoint.Port]
+            ]
+          ]
+        ]
+      ]
 
 package:
   exclude:
@@ -35,3 +50,19 @@ functions:
   increment:
     handler: handler.increment
     timeout: 6
+
+resources:
+  Resources:
+    # redis resource configured through cloudformation, without explicit manual work
+    RedisCluster:
+      Type: AWS::ElastiCache::CacheCluster
+      Properties:
+        ClusterName: ${self:service}-${opt:stage, self:provider.stage}
+        AutoMinorVersionUpgrade: true
+        CacheNodeType: cache.t2.micro
+        Engine: redis
+        NumCacheNodes: 1
+        # this equates to the provider.vpc.subnetIds
+        CacheSubnetGroupName: redis-public-lambda
+        VpcSecurityGroupIds:
+          - sg-52345126

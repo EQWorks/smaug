@@ -15,7 +15,7 @@ CONFIG_TYPES = {
     'hour': (int, -1),
     'day': (int, -1),
     'month': (int, -1),
-    'white-label': (str, None),
+    'whitelabel': (str, None),
     'customer': (str, None),
     'user': (str, None),
     'prefix': (str, None),
@@ -47,7 +47,12 @@ def vet_config(id: str, **kwargs) -> dict:
     for k, v in kwargs.items():
         _type, _default = CONFIG_TYPES.get(k, (None, None))
         if _type is not None:
-            r[k] = v if type(v) is _type else _default
+            if type(v) is _type:
+                r[k] = v
+            elif _type is str:
+                r[k] = str(v)
+            else:
+                r[k] = _default
 
     return r
 
@@ -115,5 +120,5 @@ def get_log_template(config: dict, vet: bool = True) -> str:
         if k == 'id' or _type is str:  # categorical
             f += f'#{k}#${k}'
 
-    f += '#config_key#$config_key#n#$n'
+    f += '#key#$key#n#$n'
     return Template(f)

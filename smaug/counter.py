@@ -35,7 +35,7 @@ def incr(config: dict, n: int = 1) -> bool:
 
     if n < 0:  # skip counter for -counts, eg for billing corrections
         # logging for billing purposes
-        logger.info(t.substitute(**config, config_key=config_key, n=n))
+        logger.info(t.substitute(**config, key=key, n=n))
         return True  # pass
 
     with r.pipeline() as pipe:
@@ -60,7 +60,7 @@ def incr(config: dict, n: int = 1) -> bool:
 
         pipe.execute()
         # logging for billing purposes
-        logger.info(t.substitute(**config, config_key=config_key, n=n))
+        logger.info(t.substitute(**config, key=key, n=n))
         return True  # pass
 
 

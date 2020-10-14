@@ -14,11 +14,15 @@ def increment(event):
 
 
 if __name__ == '__main__':
-    config = {'id': 'test-api-call', 'minute': 10}
+    config = {
+        'id': 'test-api-call',
+        'whitelabel': 4,
+        'customer': 789,
+        'minute': 10,
+    }
     incremented = incr(config, n=3)
     print(config, f'\n\tincremented: {incremented}')
-
-    config = {'id': 'test-api-call', 'minute': 10}
+    # negative value to only log without counter for rate limit
     incremented = incr(config, n=-10)
     print(config, f'\n\tincremented: {incremented}')
 

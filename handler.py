@@ -18,6 +18,10 @@ if __name__ == '__main__':
     incremented = incr(config, n=3)
     print(config, f'\n\tincremented: {incremented}')
 
+    config = {'id': 'test-api-call', 'minute': 10}
+    incremented = incr(config, n=-10)
+    print(config, f'\n\tincremented: {incremented}')
+
     config = {'id': 'test-api-call-unlimited'}
     incremented = incr(config, n=1)
     print(config, f'\n\tincremented: {incremented}')

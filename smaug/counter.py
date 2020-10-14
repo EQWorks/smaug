@@ -28,10 +28,18 @@ def incr(config: dict, n: int = 1) -> bool:
     key = get_config_key(config, vet=False)
     t = get_log_template(config, vet=False)
     counts = get(config, key=key, vet=False, ends=ends)
+    config_key = f'smaug#{key}'
+
+    if n == 0:  # empty count returns False
+        return False
+
+    if n < 0:  # skip counter for -counts, eg for billing corrections
+        # logging for billing purposes
+        logger.info(t.substitute(**config, config_key=config_key, n=n))
+        return True  # pass
 
     with r.pipeline() as pipe:
         # refresh config key
-        config_key = f'smaug#{key}'
         pipe.hmset(config_key, config)
         pipe.expire(config_key, 5259600)  # ~2 months retention
         # periodic

@@ -3,7 +3,7 @@ import json
 from smaug.counter import incr
 
 
-def increment(event):
+def increment(event, *args, **kwargs):
     config = event.get('config')
     n = event.get('n') or 1
 

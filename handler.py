@@ -1,6 +1,15 @@
 import json
 
-from smaug.counter import incr
+from smaug import counter
+
+
+def get(event, *args, **kwargs):
+    config = event.get('config')
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps(counter.get(config)),
+    }
 
 
 def increment(event, *args, **kwargs):
@@ -9,7 +18,7 @@ def increment(event, *args, **kwargs):
 
     return {
         'statusCode': 200,
-        'body': json.dumps({'incremented': incr(config, n)}),
+        'body': json.dumps({'incremented': counter.incr(config, n)}),
     }
 
 
@@ -20,12 +29,12 @@ if __name__ == '__main__':
         'customer': 789,
         'minute': 10,
     }
-    incremented = incr(config, n=3)
+    incremented = counter.incr(config, n=3)
     print(config, f'\n\tincremented: {incremented}')
     # negative value to only log without counter for rate limit
-    incremented = incr(config, n=-10)
+    incremented = counter.incr(config, n=-10)
     print(config, f'\n\tincremented: {incremented}')
 
     config = {'id': 'test-api-call-unlimited'}
-    incremented = incr(config, n=1)
+    incremented = counter.incr(config, n=1)
     print(config, f'\n\tincremented: {incremented}')

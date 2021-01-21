@@ -50,6 +50,9 @@ functions:
   increment:
     handler: handler.increment
     timeout: 6
+  get:
+    handler: handler.get
+    timeout: 6
 
 resources:
   Resources:

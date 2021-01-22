@@ -2,6 +2,7 @@ from hashlib import sha1
 from datetime import datetime
 import calendar
 from string import Template
+from urllib.parse import urlparse
 try:
     import simplejson as json
 except ImportError:
@@ -42,7 +43,9 @@ def vet_config(id: str, **kwargs) -> dict:
     if not id or type(id) is not str:
         raise ValueError('A string id is required')
 
-    r = dict(id=id)
+    # filter out unwanted portions from a given URL with the path as id
+    url = urlparse(id)
+    r = dict(id=url.path)
 
     for k, v in kwargs.items():
         _type, _default = CONFIG_TYPES.get(k, (None, None))

@@ -30,6 +30,7 @@ provider:
         ]
       ]
     STAGE: ${opt:stage, self:provider.stage}
+    PG_URI: ${env:PG_URI}
 
 package:
   exclude:
@@ -54,6 +55,11 @@ functions:
   get:
     handler: handler.get
     timeout: 6
+  daily-finance:
+    handler: scheduled.daily
+    events:
+      # runs at 09:00 UTC everyday
+      - schedule: cron(0 9 * * ? *)
 
 resources:
   Resources:

@@ -16,7 +16,7 @@ QUERY = '''
     | parse id /(?<endpoint>[^\s\?\#]+)(\?(?<query>\S+))?/
     | parse endpoint /(?<stage>[^\s\/]+)(?<api>\S+)?/
     | stats sum(calls) as total_calls by whitelabel, customer, stage, api
-'''
+'''  # noqa: W605
 
 STAGE = os.getenv('STAGE', 'dev')
 # TODO: see if logs group can be inferred from serverless/cloudformation config
@@ -54,37 +54,3 @@ def query(start: datetime = None, end: datetime = None):
 if __name__ == '__main__':
     from pprint import pprint
     pprint(query())
-    # sample output
-    '''
-    {'ResponseMetadata': {'HTTPHeaders': {'content-length': '876',
-                                      'content-type': 'application/x-amz-json-1.1',
-                                      'date': 'Tue, 26 Jan 2021 18:25:22 GMT',
-                                      'x-amzn-requestid': 'cc8625b3-b155-48ce-835e-b97716d59ecc'},
-                        'HTTPStatusCode': 200,
-                        'RequestId': 'cc8625b3-b155-48ce-835e-b97716d59ecc',
-                        'RetryAttempts': 0},
-    'results': [[{'field': 'whitelabel', 'value': '-1'},
-                {'field': 'customer', 'value': '-1'},
-                {'field': 'stage', 'value': 'prod'},
-                {'field': 'api', 'value': '/activity/popular-times'},
-                {'field': 'total_calls', 'value': '867'}],
-                [{'field': 'whitelabel', 'value': '-1'},
-                {'field': 'customer', 'value': '-1'},
-                {'field': 'stage', 'value': 'prod'},
-                {'field': 'api', 'value': '/dataset/enrich'},
-                {'field': 'total_calls', 'value': '88104'}],
-                [{'field': 'whitelabel', 'value': '-1'},
-                {'field': 'customer', 'value': '-1'},
-                {'field': 'stage', 'value': 'prod'},
-                {'field': 'api', 'value': '/dataset/enrichments'},
-                {'field': 'total_calls', 'value': '10'}],
-                [{'field': 'whitelabel', 'value': '-1'},
-                {'field': 'customer', 'value': '-1'},
-                {'field': 'stage', 'value': 'prod'},
-                {'field': 'api', 'value': '/dataset/poi-list/fsa'},
-                {'field': 'total_calls', 'value': '2'}]],
-    'statistics': {'bytesScanned': 267362.0,
-                    'recordsMatched': 100.0,
-                    'recordsScanned': 400.0},
-    'status': 'Complete'}
-    '''

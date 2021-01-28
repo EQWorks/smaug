@@ -12,6 +12,11 @@ provider:
     subnetIds:
       - subnet-b59ae9fe # EQ-DC-Lambda Public 1A
       - subnet-df12bb82 # EQ-DC-Lambda Public 1B
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "logs:*"
+      Resource: "*"
   environment:
     AWS_LAMBDA_DEPLOYED: true
     REDIS_URL:

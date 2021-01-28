@@ -13,11 +13,13 @@ client = boto3.client('logs')
 
 # cloudwatch logs insights query
 QUERY = '''
-    fields @message
+    fields @message, @timestamp
     | filter @message like "smaug#id"
     | parse @message /\[(?<level>\S+)\]\s+(?<ts>\S+)\s+(?<rid>\S+)\s+(?<msg>\S+)/
     | parse msg /smaug#id#(?<id>\S+)#whitelabel#(?<whitelabel>\S+)#customer#(?<customer>\S+)#key#(?<key>\S+)#n#(?<counts>\S+)/
     | parse id /(?<endpoint>[^\s\?\#]+)(\?(?<query>\S+))?/
+    # | display datefloor(@timestamp, 1h) as hour # can be grouped by through stats below
+    # | display datefloor(@timestamp, 1d) as day # can be grouped by through stats below
     | stats sum(counts) as total_counts by whitelabel, customer, endpoint
 '''  # noqa: W605
 

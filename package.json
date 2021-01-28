@@ -6,6 +6,9 @@
   "author": "Runzhou Li (woozyking) <runzhou.li@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
+  "scripts": {
+    "tunnel": "ssh -L 6380:smaug-dev.jjov0q.0001.use1.cache.amazonaws.com:6379 ubuntu@ec2-34-200-178-240.compute-1.amazonaws.com -N"
+  },
   "devDependencies": {
     "serverless-python-requirements": "^5.1.0"
   }

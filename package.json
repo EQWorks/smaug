@@ -7,9 +7,10 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "tunnel": "ssh -L 6380:smaug-dev.jjov0q.0001.use1.cache.amazonaws.com:6379 ubuntu@ec2-34-200-178-240.compute-1.amazonaws.com -N"
+    "tunnel": "ssh -L 6380:smaug-dev.jjov0q.0001.use1.cache.amazonaws.com:6379 ubuntu@ec2-34-200-178-240.compute-1.amazonaws.com -N",
+    "deploy": "env $(print-env) sls deploy"
   },
   "devDependencies": {
-    "serverless-python-requirements": "^5.1.0"
+    "serverless-python-requirements": "^5.1.1"
   }
 }

@@ -45,10 +45,10 @@ package:
     - package.json
     - yarn.lock
     - Pipfile.lock
+    - .env
 
 plugins:
   - serverless-python-requirements
-
 custom:
   pythonRequirements:
     dockerizePip: non-linux

@@ -16,7 +16,7 @@ QUERY = '''
     fields @message, @timestamp
     | filter @message like "smaug#id"
     | parse @message /\[(?<level>\S+)\]\s+(?<ts>\S+)\s+(?<rid>\S+)\s+(?<msg>\S+)/
-    | parse msg /smaug#id#(?<id>\S+)#whitelabel#(?<whitelabel>\S+)#customer#(?<customer>\S+)#key#(?<key>\S+)#n#(?<counts>\S+)/
+    | parse msg /smaug#id#(?<id>\S+)#whitelabel#(?<whitelabel>\S+)#customer#(?<customer>\d+)(?:#user#(?<user>\S+))?#key#(?<key>\S+)#n#(?<counts>\S+)/
     | parse id /(?<endpoint>[^\s\?\#]+)(\?(?<query>\S+))?/
     # | display datefloor(@timestamp, 1h) as hour # can be grouped by through stats below
     # | display datefloor(@timestamp, 1d) as day # can be grouped by through stats below

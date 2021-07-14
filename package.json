@@ -1,9 +1,9 @@
 {
   "name": "smaug",
   "version": "0.1.0",
-  "description": "centralized API counter",
+  "description": "A centralized counter and billing interface for services and APIs",
   "repository": "git@github.com:EQWorks/smaug.git",
-  "author": "Runzhou Li (woozyking) <runzhou.li@gmail.com>",
+  "author": "EQ Works <dev@eqworks.com>",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {

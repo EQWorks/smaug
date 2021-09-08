@@ -5,6 +5,7 @@ provider:
   runtime: python3.8
   memorySize: 1024
   region: us-east-1
+  versionFunctions: false
   logRetentionInDays: 731  # ~2 years
   vpc: # vpc-70658509 | EQ-DC-Tunnel
     securityGroupIds:
